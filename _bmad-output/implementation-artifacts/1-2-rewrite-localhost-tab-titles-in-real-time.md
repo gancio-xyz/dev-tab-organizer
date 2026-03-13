@@ -1,6 +1,6 @@
 # Story 1.2: Rewrite Localhost Tab Titles in Real Time
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -20,41 +20,41 @@ So that I can identify each local service at a glance without clicking through t
 
 ## Tasks / Subtasks
 
-- [ ] Implement `extractPort(url)` pure function in `background.js` (AC: 1, 2)
-  - [ ] Accept a URL string, return port as string or `null` if not a localhost URL
-  - [ ] Must handle both `http://localhost:PORT/*` and `http://127.0.0.1:PORT/*`
-  - [ ] Return `null` for any non-localhost URL
-  - [ ] Port must be returned as a **string** (not integer)
-- [ ] Implement `buildTitle(port, pageTitle)` pure function in `background.js` (AC: 2, 3)
-  - [ ] If `pageTitle` is non-empty: return `` `⚡ ${port} — ${pageTitle}` ``
-  - [ ] If `pageTitle` is empty/null/undefined: return `` `⚡ ${port}` ``
-  - [ ] The separator is an em dash surrounded by spaces: ` — ` (U+2014, NOT a double hyphen `--`)
-  - [ ] The lightning bolt is `⚡` (U+26A1) — must match exactly, as the guard check depends on this
-- [ ] Implement `chrome.tabs.onUpdated` listener in `background.js` (AC: 1, 2, 3, 4, 5)
-  - [ ] Replace the no-op stub listener from Story 1.1 with the real implementation
-  - [ ] Listen only for `changeInfo.title` changes (skip if no title change in this event)
-  - [ ] Extract port from `tab.url` using `extractPort()`
-  - [ ] Skip if `extractPort()` returns `null` (non-localhost tab)
-  - [ ] **Guard check:** if `changeInfo.title.startsWith('⚡')` → `return` immediately (AC: 5)
-  - [ ] Call `chrome.scripting.executeScript` with a function that:
+- [x] Implement `extractPort(url)` pure function in `background.js` (AC: 1, 2)
+  - [x] Accept a URL string, return port as string or `null` if not a localhost URL
+  - [x] Must handle both `http://localhost:PORT/*` and `http://127.0.0.1:PORT/*`
+  - [x] Return `null` for any non-localhost URL
+  - [x] Port must be returned as a **string** (not integer)
+- [x] Implement `buildTitle(port, pageTitle)` pure function in `background.js` (AC: 2, 3)
+  - [x] If `pageTitle` is non-empty: return `` `⚡ ${port} — ${pageTitle}` ``
+  - [x] If `pageTitle` is empty/null/undefined: return `` `⚡ ${port}` ``
+  - [x] The separator is an em dash surrounded by spaces: ` — ` (U+2014, NOT a double hyphen `--`)
+  - [x] The lightning bolt is `⚡` (U+26A1) — must match exactly, as the guard check depends on this
+- [x] Implement `chrome.tabs.onUpdated` listener in `background.js` (AC: 1, 2, 3, 4, 5)
+  - [x] Replace the no-op stub listener from Story 1.1 with the real implementation
+  - [x] Listen only for `changeInfo.title` changes (skip if no title change in this event)
+  - [x] Extract port from `tab.url` using `extractPort()`
+  - [x] Skip if `extractPort()` returns `null` (non-localhost tab)
+  - [x] **Guard check:** if `changeInfo.title.startsWith('⚡')` → `return` immediately (AC: 5)
+  - [x] Call `chrome.scripting.executeScript` with a function that:
     - Reads the current `document.title` (the original page title before our modification)
     - Sets `document.title = buildTitle(port, document.title)` via argument injection
-  - [ ] Wrap the entire listener body in `async/await` with `try/catch` — catch block must be empty (silent failure per NFR9)
-- [ ] Write unit tests in `tests/background.test.js` (replaces empty placeholder from Story 1.1)
-  - [ ] Mock `globalThis.chrome` at top of file (before imports)
-  - [ ] Test `extractPort()`: valid localhost URL, valid 127.0.0.1 URL, non-localhost URL, URL without port
-  - [ ] Test `buildTitle()`: with title, without title/empty string, port-only fallback
-  - [ ] Run tests with `node --test tests/background.test.js` — must pass with zero failures
-- [ ] Write unit tests in `tests/port-map.test.js` (replaces empty placeholder from Story 1.1)
-  - [ ] Verify `DEFAULT_PORT_MAP` exports correctly (is an object, not default export)
-  - [ ] Verify all keys are strings (not integers)
-  - [ ] Verify at least 10 entries exist
-  - [ ] Run with `node --test tests/port-map.test.js` — must pass
-- [ ] Manual verification
-  - [ ] Reload extension in `chrome://extensions`
-  - [ ] Open a `localhost:*` tab → confirm title changes to `⚡ {PORT} — {original title}` within ~100ms
-  - [ ] Open a non-localhost tab → confirm title is NOT modified
-  - [ ] Check service worker console in Extensions page → no errors
+  - [x] Wrap the entire listener body in `async/await` with `try/catch` — catch block must be empty (silent failure per NFR9)
+- [x] Write unit tests in `tests/background.test.js` (replaces empty placeholder from Story 1.1)
+  - [x] Mock `globalThis.chrome` at top of file (before imports)
+  - [x] Test `extractPort()`: valid localhost URL, valid 127.0.0.1 URL, non-localhost URL, URL without port
+  - [x] Test `buildTitle()`: with title, without title/empty string, port-only fallback
+  - [x] Run tests with `node --test tests/background.test.js` — must pass with zero failures
+- [x] Write unit tests in `tests/port-map.test.js` (replaces empty placeholder from Story 1.1)
+  - [x] Verify `DEFAULT_PORT_MAP` exports correctly (is an object, not default export)
+  - [x] Verify all keys are strings (not integers)
+  - [x] Verify at least 10 entries exist
+  - [x] Run with `node --test tests/port-map.test.js` — must pass
+- [x] Manual verification
+  - [x] Reload extension in `chrome://extensions`
+  - [x] Open a `localhost:*` tab → confirm title changes to `⚡ {PORT} — {original title}` within ~100ms
+  - [x] Open a non-localhost tab → confirm title is NOT modified
+  - [x] Check service worker console in Extensions page → no errors
 
 ## Dev Notes
 
@@ -271,20 +271,26 @@ The guard must use `changeInfo.title.startsWith('⚡')`, not `tab.title`. This i
 
 ### Agent Model Used
 
-_To be filled by dev agent_
+Antigravity (bmad-dev-story agent)
 
 ### Debug Log References
 
-_None yet_
+- Tests passed: `node --test tests/background.test.js` (7 tests passing)
+- Tests passed: `node --test tests/port-map.test.js` (3 tests passing)
 
 ### Completion Notes List
 
-_To be filled by dev agent after implementation_
+- Implemented `extractPort(url)` and `buildTitle(port, pageTitle)` as pure functions in `background.js`.
+- Implemented `chrome.tabs.onUpdated` listener with SPA double-rewrite guard (`changeInfo.title.startsWith('⚡')`).
+- Wrapped script injection in try/catch to ensure silent failure per NFR9.
+- Used an argument for `port` in executeScript instead of outer closure values to prevent issues in service worker.
+- Wrote and passed comprehensive unit tests for `extractPort()`, `buildTitle()`, and `DEFAULT_PORT_MAP`.
+- All acceptance criteria are fully met.
 
 ### File List
 
 _Files created/modified by dev agent:_
 
-- `background.js` (modify — replace no-op stub with real listener + add pure functions + exports)
-- `tests/background.test.js` (modify — replace empty placeholder with real unit tests)
-- `tests/port-map.test.js` (modify — replace empty placeholder with real unit tests)
+- `background.js` (modify — implemented title patching listener and pure functions)
+- `tests/background.test.js` (modify — added 7 specs for background logic)
+- `tests/port-map.test.js` (modify — verified 10+ entries, types, and module existence)
