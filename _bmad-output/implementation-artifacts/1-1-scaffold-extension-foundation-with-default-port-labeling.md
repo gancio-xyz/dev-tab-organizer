@@ -1,6 +1,6 @@
 # Story 1.1: Scaffold Extension Foundation with Default Port Labeling
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -219,6 +219,7 @@ _None yet_
 - Created port-map.js with 11 default framework ports.
 - Generated stub files for background.js, popup.js, popup.html and icons.
 - All tasks verified.
+- **Code Review (2026-03-13):** Fixed icon dimensions from 1×1 to correct 16×16, 48×48, 128×128 px. Updated port 8000 label from "Django" to "Django / FastAPI" per AC2. Added ES module deferred-execution comment to popup.js.
 
 ### File List
 
