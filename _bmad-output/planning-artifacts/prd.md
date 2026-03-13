@@ -1,7 +1,11 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-06-innovation', 'step-07-project-type', 'step-08-scoping', 'step-09-functional', 'step-10-nonfunctional', 'step-11-polish', 'step-12-complete']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-06-innovation', 'step-07-project-type', 'step-08-scoping', 'step-09-functional', 'step-10-nonfunctional', 'step-11-polish', 'step-12-complete', 'step-e-01-discovery', 'step-e-02-review', 'step-e-03-edit']
 status: complete
 completedAt: '2026-03-12'
+lastEdited: '2026-03-13'
+editHistory:
+  - date: '2026-03-13'
+    changes: 'Added FR27 (Extension Control — pause/resume toggle, Option A: future rewrites suppressed, existing tabs retain titles). Added pause/resume row to MVP Must-Have table. Extended Journey 2 (Priya) with pause scenario.'
 inputDocuments: []
 workflowType: 'prd'
 classification:
@@ -105,7 +109,9 @@ The popup shows a simple list of active localhost ports with their current names
 
 Two weeks later she changes the payments service to port `3010`. She opens the popup, updates one entry. No reinstall, no export/import.
 
-**Requirements revealed:** Popup UI with editable port-to-name list; real-time title update when mapping changes; `chrome.storage.sync` persistence; easy editing flow (click-to-edit inline, not a modal form).
+Before a team screen recording, Priya clicks the popup and hits the pause toggle. New tabs she opens during the call will not be relabeled — existing tabs keep their current names. She resumes after the call. Her custom mappings are untouched.
+
+**Requirements revealed:** Popup UI with editable port-to-name list; real-time title update when mapping changes; `chrome.storage.sync` persistence; easy editing flow (click-to-edit inline, not a modal form); global pause/resume toggle that suppresses future rewrites without clearing custom configuration.
 
 ---
 
@@ -249,6 +255,7 @@ No package manager distribution (not an npm library — browser extension only).
 | Default port map (10+ common frameworks) | Zero-config value delivery |
 | Popup UI: view active localhost tabs + edit port→name | Enables power user customization |
 | `chrome.storage.sync` persistence | Mappings survive restarts and sync across devices |
+| Popup pause/resume toggle | Allows temporary suppression of title rewriting without uninstalling |
 | MIT license + GitHub repo | Open source distribution |
 | Chrome Web Store listing + privacy policy | Public discoverability |
 
@@ -328,6 +335,10 @@ No package manager distribution (not an npm library — browser extension only).
 - **FR24:** The extension source code is publicly available on GitHub under the MIT license
 - **FR25:** The default port map config file is structured such that adding a new entry requires only a single-line change
 - **FR26:** The repository includes a contribution guide explaining how to add port mappings
+
+### Extension Control
+
+- **FR27:** Users can globally pause and resume the extension's title-rewriting behavior via a toggle in the popup. When paused, future `chrome.tabs.onUpdated` title rewrites are suppressed; already-renamed tabs retain their current titles until the extension is resumed.
 
 ## Non-Functional Requirements
 
