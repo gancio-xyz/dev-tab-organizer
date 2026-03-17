@@ -31,7 +31,16 @@ localhost tab title to include the port number and service name: `⚡ 3000 — R
 | 9000 | Webpack |
 
 Don't see your stack? Adding a new entry is one line in `port-map.js`.
-(Custom mapping via the extension popup is coming in v1.0!)
+
+## Popup — Custom Names & Pause/Resume
+
+Click the extension icon to open the popup:
+
+![Popup UI showing custom port names and pause button](screenshot-popup-v1.png)
+
+- **Rename any port** by clicking its input and typing a custom name — saved automatically on blur or Enter
+- **Clear a custom name** to revert to the default mapping
+- **Pause** the extension temporarily (e.g., during screen recordings) — existing titles are retained
 
 ## Load unpacked (local development)
 
