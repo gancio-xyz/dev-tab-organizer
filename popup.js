@@ -1,6 +1,6 @@
 import { DEFAULT_PORT_MAP } from './port-map.js';
 
-function escapeHtml(str) {
+export function escapeHtml(str) {
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -8,14 +8,14 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-function renderEmptyState() {
+export function renderEmptyState() {
   document.getElementById('tab-list').hidden = true;
   const el = document.getElementById('empty-state');
   el.hidden = false;
   el.textContent = "No localhost tabs open yet — start a local server and I'll label it automatically.";
 }
 
-function renderTabList(tabs, portMappings) {
+export function renderTabList(tabs, portMappings, rawPortMappings = {}) {
   document.getElementById('empty-state').hidden = true;
   const list = document.getElementById('tab-list');
   list.hidden = false;
@@ -26,7 +26,7 @@ function renderTabList(tabs, portMappings) {
 
   list.innerHTML = sorted.map(tab => {
     const port = new URL(tab.url).port;
-    const customName = portMappings?.[port] ?? '';
+    const customName = rawPortMappings?.[port] ?? '';
     const defaultName = DEFAULT_PORT_MAP[port] ?? 'Port ' + port;
     return `
       <div class="tab-row" data-port="${port}" role="listitem">
@@ -42,7 +42,43 @@ function renderTabList(tabs, portMappings) {
   }).join('');
 }
 
-async function init() {
+export function applyMapping(portMappings, port, value) {
+  const updated = { ...portMappings };
+  if (value) {
+    updated[port] = value;
+  } else {
+    delete updated[port];
+  }
+  return updated;
+}
+
+async function saveMapping(input) {
+  const port = input.dataset.port;
+  const value = input.value.trim();
+  try {
+    const { portMappings = {} } = await chrome.storage.sync.get('portMappings');
+    const updated = applyMapping(portMappings, port, value);
+    await chrome.storage.sync.set({ portMappings: updated });
+  } catch (_) {
+    // silent per NFR9
+  }
+}
+
+export function attachEditListeners() {
+  document.querySelectorAll('.tab-name-input').forEach(input => {
+    input.addEventListener('blur', () => {
+      saveMapping(input);
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveMapping(input);
+      }
+    });
+  });
+}
+
+export async function init() {
   try {
     const [tabs, storage] = await Promise.all([
       chrome.tabs.query({ url: ['*://localhost/*', '*://127.0.0.1/*'] }),
@@ -52,7 +88,9 @@ async function init() {
     if (tabs.length === 0) {
       renderEmptyState();
     } else {
-      renderTabList(tabs, portMappings);
+      const resolved = { ...DEFAULT_PORT_MAP, ...portMappings };
+      renderTabList(tabs, resolved, portMappings);
+      attachEditListeners();
     }
   } catch (_) {
     renderEmptyState();
