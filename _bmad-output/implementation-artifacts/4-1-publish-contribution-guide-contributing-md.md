@@ -1,6 +1,6 @@
 # Story 4.1: Publish Contribution Guide (CONTRIBUTING.md)
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -19,17 +19,17 @@ So that I can open a pull request in under 10 minutes without needing to ask any
 
 ## Tasks / Subtasks
 
-- [ ] Create `CONTRIBUTING.md` at the project root (AC: 1, 2, 3, 4)
-  - [ ] Include section: how to add a port mapping with the exact one-line example
-  - [ ] Include section: how to load unpacked in Chrome, how to refresh after edits, how to view logs
-  - [ ] Include section: how to run tests (`node --test tests/*.test.js`)
-  - [ ] Include section: PR workflow (fork, branch, change, test, open PR)
-  - [ ] Include MIT license note — all contributions licensed under MIT by submitting a PR
-  - [ ] Include "In scope / Out of scope" brief guidance so contributors don't propose incompatible changes
-- [ ] Manual verification (AC: 4)
-  - [ ] Read the finished `CONTRIBUTING.md` end to end — confirm a new contributor can follow it to completion without outside help
-  - [ ] Confirm the port-map example uses a real-looking port number NOT already in `port-map.js` (e.g., `"4321": "Astro"`)
-  - [ ] Confirm file is at project root (not in a subdirectory)
+- [x] Create `CONTRIBUTING.md` at the project root (AC: 1, 2, 3, 4)
+  - [x] Include section: how to add a port mapping with the exact one-line example
+  - [x] Include section: how to load unpacked in Chrome, how to refresh after edits, how to view logs
+  - [x] Include section: how to run tests (`node --test tests/*.test.js`)
+  - [x] Include section: PR workflow (fork, branch, change, test, open PR)
+  - [x] Include MIT license note — all contributions licensed under MIT by submitting a PR
+  - [x] Include "In scope / Out of scope" brief guidance so contributors don't propose incompatible changes
+- [x] Manual verification (AC: 4)
+  - [x] Read the finished `CONTRIBUTING.md` end to end — confirm a new contributor can follow it to completion without outside help
+  - [x] Confirm the port-map example uses a real-looking port number NOT already in `port-map.js` (e.g., `"4321": "Astro"`)
+  - [x] Confirm file is at project root (not in a subdirectory)
 
 ## Dev Notes
 
@@ -193,7 +193,7 @@ This story creates a Markdown file. There are no automated tests to write. The v
 
 ### Agent Model Used
 
-_To be filled by dev agent_
+Antigravity
 
 ### Debug Log References
 
@@ -201,10 +201,12 @@ _None_
 
 ### Completion Notes List
 
-_To be filled by dev agent after implementation_
+- Created `CONTRIBUTING.md` at the project root.
+- Included exact port map example `"4321": "Astro"`.
+- Instructions for unpacked extension, test execution, and PR workflow added.
+- In-scope/Out-of-scope guidance included.
+- Content manually checked to be plain language, with MIT license mentioned.
 
 ### File List
-
-_Files created/modified by dev agent:_
 
 - `CONTRIBUTING.md` (create — at project root)

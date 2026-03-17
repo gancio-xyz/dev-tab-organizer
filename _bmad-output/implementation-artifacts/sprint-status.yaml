@@ -34,7 +34,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-13
-last_updated: 2026-03-17 # updated 2026-03-17 (2-3 → done)
+last_updated: 2026-03-17 # updated 2026-03-17 (4-1 → review)
 project: dev-tab-organizer
 project_key: NOKEY
 tracking_system: file-system
@@ -66,7 +66,7 @@ development_status:
 
   # Epic 4: Full Launch — v1.0 Release
   epic-4: in-progress
-  4-1-publish-contribution-guide-contributing-md: ready-for-dev
+  4-1-publish-contribution-guide-contributing-md: review
   4-2-automate-release-pipeline-with-github-actions: done
   4-3-update-chrome-web-store-listing-for-v1-0: ready-for-dev
   epic-4-retrospective: optional
