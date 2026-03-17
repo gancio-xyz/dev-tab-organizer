@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULT_PORT_MAP } from '../extension/port-map.js';
+import { DEFAULT_PORT_MAP, DEFAULT_EMOJI_MAP, getDefaultEmoji } from '../extension/port-map.js';
 
 test('DEFAULT_PORT_MAP is exported correctly and is an object', () => {
   assert.ok(DEFAULT_PORT_MAP, 'DEFAULT_PORT_MAP should be exported');
@@ -25,4 +25,24 @@ test('DEFAULT_PORT_MAP all keys must be strings, not integers', () => {
     assert.ok(!isNaN(parseInt(key, 10)), `Key ${key} does not look like a port number`);
     assert.ok(key.length > 0, `Key must be non-empty`);
   }
+});
+
+test('DEFAULT_EMOJI_MAP exports port-specific default emojis', () => {
+  assert.ok(DEFAULT_EMOJI_MAP, 'DEFAULT_EMOJI_MAP should be exported');
+  assert.equal(DEFAULT_EMOJI_MAP['3000'], '⚛️');
+  assert.equal(DEFAULT_EMOJI_MAP['5173'], '🚀');
+  assert.equal(DEFAULT_EMOJI_MAP['8080'], '📦');
+  assert.equal(DEFAULT_EMOJI_MAP['3001'], '🟢');
+  assert.equal(DEFAULT_EMOJI_MAP['8000'], '🐍');
+  assert.equal(DEFAULT_EMOJI_MAP['4000'], '🐦');
+});
+
+test('getDefaultEmoji returns default for known port', () => {
+  assert.equal(getDefaultEmoji('3000'), '⚛️');
+  assert.equal(getDefaultEmoji('5173'), '🚀');
+});
+
+test('getDefaultEmoji returns lightning bolt for unknown port', () => {
+  assert.equal(getDefaultEmoji('9999'), '⚡');
+  assert.equal(getDefaultEmoji('1234'), '⚡');
 });

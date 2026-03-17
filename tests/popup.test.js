@@ -32,7 +32,7 @@ globalThis.chrome = {
   }
 };
 
-const { applyMapping, updateToggleUI, renderTabList } = await import('../extension/popup.js');
+const { applyMapping, applyNameMapping, applyEmojiMapping, normalizePortMappings, updateToggleUI, renderTabList } = await import('../extension/popup.js');
 
 test('applyMapping sets new value for empty mappings', () => {
   const result = applyMapping({}, '3000', 'My App');
@@ -83,4 +83,50 @@ test('renderTabList: one row per port across different ports', () => {
   const rows = (tabListEl.innerHTML.match(/class="tab-row"/g) || []);
   assert.equal(rows.length, 2, 'should render two rows for two different ports');
   assert.ok(tabListEl.innerHTML.includes('input-3000') && tabListEl.innerHTML.includes('input-8080'));
+});
+
+test('renderTabList: each row includes emoji input', () => {
+  tabListEl.innerHTML = '';
+  const tabs = [{ url: 'http://localhost:3000/' }];
+  renderTabList(tabs, {}, {});
+  assert.ok(tabListEl.innerHTML.includes('emoji-input'), 'row should contain emoji input');
+  assert.ok(tabListEl.innerHTML.includes('maxlength="2"'), 'emoji input should be maxlength 2');
+});
+
+test('normalizePortMappings: empty or non-object returns empty', () => {
+  assert.deepEqual(normalizePortMappings({}), {});
+  assert.deepEqual(normalizePortMappings(null), {});
+  assert.deepEqual(normalizePortMappings(undefined), {});
+});
+
+test('normalizePortMappings: legacy string value becomes { name, emoji }', () => {
+  const result = normalizePortMappings({ '3000': 'My App' });
+  assert.equal(result['3000'].name, 'My App');
+  assert.equal(result['3000'].emoji, '⚛️');
+});
+
+test('normalizePortMappings: object value preserves name and emoji', () => {
+  const result = normalizePortMappings({ '3000': { name: 'My App', emoji: '🚀' } });
+  assert.equal(result['3000'].name, 'My App');
+  assert.equal(result['3000'].emoji, '🚀');
+});
+
+test('applyNameMapping: sets name and keeps emoji', () => {
+  const result = applyNameMapping({ '3000': { name: 'Old', emoji: '🚀' } }, '3000', 'New Name');
+  assert.deepEqual(result['3000'], { name: 'New Name', emoji: '🚀' });
+});
+
+test('applyNameMapping: empty name and default emoji removes entry', () => {
+  const result = applyNameMapping({ '3000': { name: '', emoji: '⚛️' } }, '3000', '');
+  assert.ok(!('3000' in result));
+});
+
+test('applyEmojiMapping: sets emoji and keeps name', () => {
+  const result = applyEmojiMapping({ '3000': { name: 'My App', emoji: '⚛️' } }, '3000', '🐧');
+  assert.deepEqual(result['3000'], { name: 'My App', emoji: '🐧' });
+});
+
+test('applyEmojiMapping: empty name and default emoji removes entry', () => {
+  const result = applyEmojiMapping({ '3000': { name: '', emoji: '⚛️' } }, '3000', '⚛️');
+  assert.ok(!('3000' in result));
 });

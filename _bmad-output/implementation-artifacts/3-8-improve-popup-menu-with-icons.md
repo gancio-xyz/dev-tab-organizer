@@ -1,6 +1,6 @@
 # Story 3.8: Improve Popup Menu with Icons/Emojis
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -19,7 +19,7 @@ So that I can quickly identify my projects at a glance and customize them to my 
 
 ## Tasks / Subtasks
 
-- [ ] Update `port-map.js` to support default emojis for specific ports:
+- [x] Update `port-map.js` to support default emojis for specific ports:
     - ⚛️ 3000 (React)
     - 🚀 5173 (Vite)
     - 📦 8080 (Webpack/Spring Boot)
@@ -28,12 +28,12 @@ So that I can quickly identify my projects at a glance and customize them to my 
     - 🐦 4000 (Phoenix)
     - 🐘 8000 (PHP)
     - ⚡ Default
-- [ ] Modify `popup.js` `renderTabList` to include an emoji in each row.
-- [ ] Update `popup.js` `saveMapping` and `attachEditListeners` to handle the new emoji input field.
-- [ ] Update `popup.html` / `popup.css` to accommodate the new emoji input field (proper spacing, alignment).
-- [ ] Update `popup.html` / `popup.css` to make the emoji input field editable with only one emoji.
-- [ ] Ensure `background.js` (or wherever title rewriting happens) doesn't break if the storage structure for `portMappings` changes.
-- [ ] Ensure the tab title gets wrote consistently and it does not duplicate title, emojis or port numbers.
+- [x] Modify `popup.js` `renderTabList` to include an emoji in each row.
+- [x] Update `popup.js` `saveMapping` and `attachEditListeners` to handle the new emoji input field.
+- [x] Update `popup.html` / `popup.css` to accommodate the new emoji input field (proper spacing, alignment).
+- [x] Update `popup.html` / `popup.css` to make the emoji input field editable with only one emoji.
+- [x] Ensure `background.js` (or wherever title rewriting happens) doesn't break if the storage structure for `portMappings` changes.
+- [x] Ensure the tab title gets wrote consistently and it does not duplicate title, emojis or port numbers.
 
 ## Dev Notes
 
@@ -51,3 +51,31 @@ New row structure:
   <input id="input-3000" class="tab-name-input" ...>
 </div>
 ```
+
+---
+
+## Dev Agent Record
+
+### Implementation Plan
+- Added `DEFAULT_EMOJI_MAP` and `getDefaultEmoji(port)` in `port-map.js` for port-specific default emojis (⚛️ 3000, 🟢 3001, 🐦 4000, 🚀 5173, 🐍 8000, 📦 8080; ⚡ default). One default per port (8000 uses 🐍 for Django/FastAPI).
+- Storage: normalized to `{ "port": { name, emoji } }` with backward compat: legacy string values treated as name-only, emoji from default.
+- `popup.js`: `normalizePortMappings(raw)` for reading; `applyNameMapping` / `applyEmojiMapping` for writes; `renderTabList` builds row with `.emoji-input` (maxlength=2), label, `.tab-name-input`; `saveMapping` and new `saveEmojiMapping` persist via apply*; `attachEditListeners` wires both inputs (blur/Enter).
+- `popup.css`: `.emoji-input` width 2.2em, centered, focus ring.
+- `background.js`: `resolvePortName` accepts both string and `{ name, emoji }` and returns only the name (tab title unchanged; no emoji in title).
+
+### Completion Notes
+- All ACs satisfied: every row shows emoji; defaults from port-map; custom emoji persisted in sync storage; emoji left of label; editable via small input (max 2 chars).
+- Backward compatibility: string `portMappings[port]` still resolved as name; new writes use object form.
+- Tab title remains "⚡ port — name" only; custom emoji is popup-only, so no duplication.
+
+### File List
+- extension/port-map.js (modified)
+- extension/popup.js (modified)
+- extension/popup.css (modified)
+- extension/background.js (modified)
+- tests/port-map.test.js (modified)
+- tests/popup.test.js (modified)
+- tests/background.test.js (modified)
+
+### Change Log
+- 2026-03-17: Story 3.8 implemented — popup emoji per port, DEFAULT_EMOJI_MAP, normalizePortMappings, applyNameMapping/applyEmojiMapping, resolvePortName backward compat, tests added.

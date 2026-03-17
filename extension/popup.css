@@ -21,6 +21,22 @@ body {
   border-bottom: 1px solid #eee;
 }
 
+.emoji-input {
+  width: 2.2em;
+  min-width: 2.2em;
+  padding: 4px 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.emoji-input:focus {
+  outline: 2px solid #0066cc;
+  border-color: transparent;
+}
+
 .tab-row label {
   min-width: 72px;
   font-size: 13px;
@@ -31,6 +47,7 @@ body {
 
 .tab-name-input {
   flex: 1;
+  min-width: 0;
   padding: 4px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -40,6 +57,28 @@ body {
 .tab-name-input:focus {
   outline: 2px solid #0066cc;
   border-color: transparent;
+}
+
+#update-titles-btn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px 0;
+  border: 1px solid #0066cc;
+  border-radius: 4px;
+  background: #e6f2ff;
+  color: #0066cc;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+#update-titles-btn:hover {
+  background: #cce5ff;
+}
+
+#update-titles-btn:focus {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
 }
 
 #toggle-btn {

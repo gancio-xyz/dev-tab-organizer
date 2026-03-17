@@ -40,7 +40,7 @@ globalThis.chrome = {
   }
 };
 
-const { extractPort, buildTitle, stripPrefix } = await import('../extension/background.js');
+const { extractPort, buildTitle, stripPrefix, resolvePortName, resolvePortEmoji } = await import('../extension/background.js');
 
 test('extractPort: localhost URL with port', () => {
   assert.equal(extractPort('http://localhost:3000/'), '3000');
@@ -153,27 +153,28 @@ test('status=complete: skipped when neither title change nor complete', () => {
 
 test('onChanged: updates title via portMappings in replace mode', async () => {
   lastInjectedTitle = null;
-  globalThis.document = { title: '⚡ 3001 — Node / API' };
+  globalThis.document = { title: '🟢 3001 — Node / API' };
   const originalGet = globalThis.chrome.storage.sync.get;
   globalThis.chrome.storage.sync.get = async () => ({ isEnabled: true, rewriteMode: 'replace' });
   await onChangedCallback(
     { portMappings: { oldValue: {}, newValue: { '3001': 'Payment API' } } },
     'sync'
   );
-  assert.equal(lastInjectedTitle, '⚡ 3001 — Payment API');
+  // Port 3001 default emoji is 🟢 (getDefaultEmoji); legacy string mapping keeps default emoji
+  assert.equal(lastInjectedTitle, '🟢 3001 — Payment API');
   globalThis.chrome.storage.sync.get = originalGet;
 });
 
 test('onChanged: in prefix mode keeps original bare title with new mapping', async () => {
   lastInjectedTitle = null;
-  globalThis.document = { title: '⚡ 3001 — Node / API' };
+  globalThis.document = { title: '🟢 3001 — Node / API' };
   const originalGet = globalThis.chrome.storage.sync.get;
   globalThis.chrome.storage.sync.get = async () => ({ isEnabled: true, rewriteMode: 'prefix' });
   await onChangedCallback(
     { portMappings: { oldValue: {}, newValue: { '3001': 'Payment API' } } },
     'sync'
   );
-  assert.equal(lastInjectedTitle, '⚡ 3001 — Node / API');
+  assert.equal(lastInjectedTitle, '🟢 3001 — Node / API');
   globalThis.chrome.storage.sync.get = originalGet;
 });
 test('onUpdated: in prefix mode adds only port prefix and keeps page title', async () => {
@@ -192,20 +193,21 @@ test('onUpdated: in prefix mode adds only port prefix and keeps page title', asy
     { url: 'http://localhost:3000/', title: 'My App' }
   );
 
-  assert.equal(lastInjectedTitle, '⚡ 3000 — My App');
+  // Port 3000 default emoji is ⚛️
+  assert.equal(lastInjectedTitle, '⚛️ 3000 — My App');
   globalThis.chrome.storage.sync.get = originalGet;
 });
 
 test('onChanged: in replace mode reverts to default name when custom override deleted', async () => {
   lastInjectedTitle = null;
-  globalThis.document = { title: '⚡ 3001 — Payment API' };
+  globalThis.document = { title: '🟢 3001 — Payment API' };
   const originalGet = globalThis.chrome.storage.sync.get;
   globalThis.chrome.storage.sync.get = async () => ({ isEnabled: true, rewriteMode: 'replace' });
   await onChangedCallback(
     { portMappings: { oldValue: { '3001': 'Payment API' }, newValue: {} } },
     'sync'
   );
-  assert.equal(lastInjectedTitle, '⚡ 3001 — Node / API');
+  assert.equal(lastInjectedTitle, '🟢 3001 — Node / API');
   globalThis.chrome.storage.sync.get = originalGet;
 });
 
@@ -265,5 +267,41 @@ test('handleStorageChange: skips injection when isEnabled = false', async () => 
   
   // Restore mocks
   globalThis.chrome.scripting.executeScript = originalExecuteScript;
+  globalThis.chrome.storage.sync.get = originalGet;
+});
+
+test('resolvePortName: legacy string mapping returns name', () => {
+  const defaultMap = { '3000': 'React' };
+  assert.equal(resolvePortName('3000', { '3000': 'My App' }, defaultMap), 'My App');
+});
+
+test('resolvePortName: object mapping returns .name', () => {
+  const defaultMap = { '3000': 'React' };
+  assert.equal(resolvePortName('3000', { '3000': { name: 'My App', emoji: '🚀' } }, defaultMap), 'My App');
+});
+
+test('resolvePortName: object with empty name falls back to default', () => {
+  const defaultMap = { '3000': 'React' };
+  assert.equal(resolvePortName('3000', { '3000': { name: '', emoji: '🚀' } }, defaultMap), 'React');
+});
+
+test('resolvePortEmoji: returns custom emoji from object mapping', () => {
+  assert.equal(resolvePortEmoji('3000', { '3000': { name: 'My App', emoji: '🚀' } }), '🚀');
+});
+
+test('resolvePortEmoji: returns default for port when legacy string mapping', () => {
+  assert.equal(resolvePortEmoji('3000', { '3000': 'My App' }), '⚛️');
+});
+
+test('onChanged: custom emoji in portMappings appears in tab title', async () => {
+  lastInjectedTitle = null;
+  globalThis.document = { title: '🟢 3001 — Node / API' };
+  const originalGet = globalThis.chrome.storage.sync.get;
+  globalThis.chrome.storage.sync.get = async () => ({ isEnabled: true, rewriteMode: 'replace' });
+  await onChangedCallback(
+    { portMappings: { oldValue: {}, newValue: { '3001': { name: 'My App', emoji: '🐧' } } } },
+    'sync'
+  );
+  assert.equal(lastInjectedTitle, '🐧 3001 — My App');
   globalThis.chrome.storage.sync.get = originalGet;
 });

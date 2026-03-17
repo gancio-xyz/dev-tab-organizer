@@ -1,4 +1,4 @@
-import { DEFAULT_PORT_MAP } from './port-map.js';
+import { DEFAULT_PORT_MAP, getDefaultEmoji } from './port-map.js';
 
 // --- Pure functions (exported for testing) ---
 export function extractPort(url) {
@@ -19,13 +19,19 @@ export function buildTitle(port, pageTitle) {
   return `⚡ ${port}`;
 }
 
+/**
+ * Resolve display name for a port. Backward compatible: userMappings[port] may be string (legacy) or { name, emoji }.
+ */
 export function resolvePortName(port, userMappings, defaultMap) {
   const mappings = userMappings || {};
   const defaults = defaultMap || {};
 
-  const userName = mappings[port];
-  if (typeof userName === 'string' && userName.trim()) {
-    return userName.trim();
+  const v = mappings[port];
+  if (typeof v === 'string' && v.trim()) {
+    return v.trim();
+  }
+  if (v && typeof v === 'object' && typeof v.name === 'string' && v.name.trim()) {
+    return v.name.trim();
   }
 
   const defaultName = defaults[port];
@@ -36,33 +42,48 @@ export function resolvePortName(port, userMappings, defaultMap) {
   return undefined;
 }
 
-// Matches one or more "⚡ port" prefixes (with optional " — "), so we strip all and avoid accumulation.
-const PREFIX_REGEX = /^(?:⚡\s+\d+\s*(?:—\s*)?)+/;
+/**
+ * Resolve display emoji for a port. Backward compatible: userMappings[port] may be string (use default) or { name, emoji }.
+ */
+export function resolvePortEmoji(port, userMappings) {
+  const mappings = userMappings || {};
+  const v = mappings[port];
+  if (v && typeof v === 'object' && typeof v.emoji === 'string' && v.emoji.trim()) {
+    return v.emoji.trim().slice(0, 2);
+  }
+  return getDefaultEmoji(port);
+}
+
+// Matches one or more "emoji port" prefixes (emoji 1–4 chars, e.g. ⚡ or 🚀) so we strip all and avoid accumulation.
+const PREFIX_REGEX = /^(?:[\s\S]{1,4}\s+\d+\s*(?:—\s*)?)+/;
 
 export function stripPrefix(title) {
-  if (!title || !title.startsWith('⚡')) return title;
+  if (!title || typeof title !== 'string') return title;
+  if (!PREFIX_REGEX.test(title)) return title;
   return title.replace(PREFIX_REGEX, '').trim();
 }
 
 /**
- * Injected via executeScript.
+ * Injected via executeScript. Must be self-contained (no outer-scope refs) so it runs in the tab's page context.
  *
- * - mode === 'replace': title becomes "⚡ port — name" (or "⚡ port — bareTitle" if name is empty).
- * - mode === 'prefix': title becomes "⚡ port — bareTitle" (port prefix only; no service name in title).
+ * - mode === 'replace': title becomes "{emoji} port — name" (or "{emoji} port — bareTitle" if name is empty).
+ * - mode === 'prefix': title becomes "{emoji} port — bareTitle".
  *
  * @param {string} port - e.g. '3000'
  * @param {string} name - resolved service name or ''
  * @param {string} mode - 'replace' | 'prefix'
+ * @param {string} emoji - display emoji (default ⚡)
  */
-function applyTitleInPage(port, name, mode) {
+function applyTitleInPage(port, name, mode, emoji = '⚡') {
+  const prefixRegex = /^(?:[\s\S]{1,4}\s+\d+\s*(?:—\s*)?)+/;
   const raw = document.title || '';
-  const prefixed = raw.startsWith('⚡');
-  const afterPrefix = prefixed ? raw.replace(PREFIX_REGEX, '').trim() : raw;
+  const prefixed = prefixRegex.test(raw);
+  const afterPrefix = prefixed ? raw.replace(prefixRegex, '').trim() : raw;
 
   const nameStr = (name && name.trim()) || '';
+  const emojiStr = (emoji && String(emoji).trim()) ? String(emoji).trim().slice(0, 2) : '⚡';
   let pageTitle = afterPrefix;
 
-  // If the page title starts with "Name —", strip that leading segment so we don't duplicate it.
   if (nameStr && pageTitle.startsWith(nameStr + ' — ')) {
     pageTitle = pageTitle.slice(nameStr.length + 3).trim();
   }
@@ -70,15 +91,14 @@ function applyTitleInPage(port, name, mode) {
   const replaceMode = mode === 'replace';
   if (replaceMode) {
     const useName = nameStr || pageTitle.trim();
-    document.title = useName ? `⚡ ${port} — ${useName}` : `⚡ ${port}`;
+    document.title = useName ? `${emojiStr} ${port} — ${useName}` : `${emojiStr} ${port}`;
     return;
   }
 
-  // prefix mode: ignore service name in the final title; just add the port prefix.
   if (pageTitle && pageTitle.trim()) {
-    document.title = `⚡ ${port} — ${pageTitle.trim()}`;
+    document.title = `${emojiStr} ${port} — ${pageTitle.trim()}`;
   } else {
-    document.title = `⚡ ${port}`;
+    document.title = `${emojiStr} ${port}`;
   }
 }
 
@@ -96,10 +116,11 @@ chrome.runtime.onInstalled.addListener(async () => {
         if (!port) continue;
         const serviceName = resolvePortName(port, portMappings, DEFAULT_PORT_MAP);
         const nameStr = (typeof serviceName === 'string' && serviceName.trim()) ? serviceName.trim() : '';
+        const emoji = resolvePortEmoji(port, portMappings);
         await chrome.scripting.executeScript({
           target: { tabId: tab.id },
           func: applyTitleInPage,
-          args: [port, nameStr, mode]
+          args: [port, nameStr, mode, emoji]
         });
       } catch (_) {
         // Tab closed between query and executeScript — silent per NFR9
@@ -128,11 +149,12 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
     const serviceName = resolvePortName(port, portMappings, DEFAULT_PORT_MAP);
     const nameStr = (typeof serviceName === 'string' && serviceName.trim()) ? serviceName.trim() : '';
+    const emoji = resolvePortEmoji(port, portMappings);
 
     await chrome.scripting.executeScript({
       target: { tabId },
       func: applyTitleInPage,
-      args: [port, nameStr, rewriteMode]
+      args: [port, nameStr, rewriteMode, emoji]
     });
   } catch (_) {
     // silent failure
@@ -160,12 +182,13 @@ async function handleStorageChange(changes, area) {
 
       const serviceName = resolvePortName(port, newPortMappings, DEFAULT_PORT_MAP);
       const nameStr = (typeof serviceName === 'string' && serviceName.trim()) ? serviceName.trim() : '';
+      const emoji = resolvePortEmoji(port, newPortMappings);
 
       try {
         await chrome.scripting.executeScript({
           target: { tabId: tab.id },
           func: applyTitleInPage,
-          args: [port, nameStr, rewriteMode]
+          args: [port, nameStr, rewriteMode, emoji]
         });
       } catch (_) {
         // Tab may have closed between query and inject — silent fail per NFR9
