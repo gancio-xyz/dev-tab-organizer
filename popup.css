@@ -1,0 +1,43 @@
+body {
+  min-width: 320px;
+  max-width: 400px;
+  padding: 12px;
+  font-family: system-ui, sans-serif;
+  margin: 0;
+}
+
+#empty-state {
+  padding: 16px 0;
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+}
+
+.tab-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.tab-row label {
+  min-width: 72px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.tab-name-input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.tab-name-input:focus {
+  outline: 2px solid #0066cc;
+  border-color: transparent;
+}

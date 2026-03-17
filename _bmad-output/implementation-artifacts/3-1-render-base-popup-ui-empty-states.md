@@ -1,6 +1,6 @@
 # Story 3.1: Render Base Popup UI & Empty States
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -19,36 +19,36 @@ So that I immediately understand the extension's status without any guesswork.
 
 ## Tasks / Subtasks
 
-- [ ] Implement `popup.js` `init()` async function (AC: 1, 2, 3)
-  - [ ] Replace stub `init()` from Story 1.1 with real implementation
-  - [ ] Call `chrome.tabs.query({ url: ['*://localhost/*', '*://127.0.0.1/*'] })` to get active localhost tabs
-  - [ ] Call `chrome.storage.sync.get('portMappings')` to load user overrides
-  - [ ] Resolve display map: `const resolved = { ...DEFAULT_PORT_MAP, ...(portMappings ?? {}) }`
-  - [ ] Branch on `tabs.length === 0`: call `renderEmptyState()` OR `renderTabList(tabs, resolved, portMappings)`
-  - [ ] Wrap entire `init()` in `try/catch` — if storage read fails, fall back to `DEFAULT_PORT_MAP` only (do not crash the popup)
-  - [ ] Call `init()` at module level (bottom of `popup.js`, after function declarations)
-- [ ] Implement `renderEmptyState()` function (AC: 1)
-  - [ ] Show `#empty-state`, hide `#tab-list`
-  - [ ] Set `#empty-state` text content (NOT innerHTML) to exactly: `"No localhost tabs open yet — start a local server and I'll label it automatically."`
-  - [ ] Do NOT leave `#empty-state` as a blank div — it must contain visible text
-- [ ] Implement `renderTabList(tabs, resolved, portMappings)` function (AC: 2, 3, 4)
-  - [ ] Show `#tab-list`, hide `#empty-state`
-  - [ ] Sort tabs by port number (ascending) before rendering
-  - [ ] For each tab, extract port using `new URL(tab.url).port`
-  - [ ] Build one `.tab-row` per tab using the exact HTML structure specified in Dev Notes
-  - [ ] `input.value` = `portMappings[port] ?? ''` — shows the user's custom override only (empty means using default)
-  - [ ] `input.placeholder` = `DEFAULT_PORT_MAP[port] ?? 'Port ' + port` — shows the default that is currently active
-  - [ ] Set the initial `innerHTML` of `#tab-list` to the generated rows (initial render only — see AC: 4)
-- [ ] Add basic popup styling in `popup.html` or a linked `popup.css` (AC: 2, 3)
-  - [ ] Popup width: fixed at ~320px (set via `body { min-width: 320px }` in CSS)
-  - [ ] Tab rows: clear visual separation, port label visible, input field full-width within row
-  - [ ] Empty state: centered, readable text — not a blank white panel
-  - [ ] No external CSS frameworks — vanilla CSS only (zero dependencies, NFR15)
-- [ ] Manual verification (AC: 1, 2, 3)
-  - [ ] With no localhost tabs open: click icon → empty state message appears
-  - [ ] With localhost tabs open: click icon → list renders within ~200ms, each port and name visible
-  - [ ] Tab through all inputs with keyboard only → all inputs reachable without mouse
-  - [ ] Check popup DevTools console (right-click popup → Inspect) → no JS errors
+- [x] Implement `popup.js` `init()` async function (AC: 1, 2, 3)
+  - [x] Replace stub `init()` from Story 1.1 with real implementation
+  - [x] Call `chrome.tabs.query({ url: ['*://localhost/*', '*://127.0.0.1/*'] })` to get active localhost tabs
+  - [x] Call `chrome.storage.sync.get('portMappings')` to load user overrides
+  - [x] Resolve display map: `const resolved = { ...DEFAULT_PORT_MAP, ...(portMappings ?? {}) }`
+  - [x] Branch on `tabs.length === 0`: call `renderEmptyState()` OR `renderTabList(tabs, resolved, portMappings)`
+  - [x] Wrap entire `init()` in `try/catch` — if storage read fails, fall back to `DEFAULT_PORT_MAP` only (do not crash the popup)
+  - [x] Call `init()` at module level (bottom of `popup.js`, after function declarations)
+- [x] Implement `renderEmptyState()` function (AC: 1)
+  - [x] Show `#empty-state`, hide `#tab-list`
+  - [x] Set `#empty-state` text content (NOT innerHTML) to exactly: `"No localhost tabs open yet — start a local server and I'll label it automatically."`
+  - [x] Do NOT leave `#empty-state` as a blank div — it must contain visible text
+- [x] Implement `renderTabList(tabs, resolved, portMappings)` function (AC: 2, 3, 4)
+  - [x] Show `#tab-list`, hide `#empty-state`
+  - [x] Sort tabs by port number (ascending) before rendering
+  - [x] For each tab, extract port using `new URL(tab.url).port`
+  - [x] Build one `.tab-row` per tab using the exact HTML structure specified in Dev Notes
+  - [x] `input.value` = `portMappings[port] ?? ''` — shows the user's custom override only (empty means using default)
+  - [x] `input.placeholder` = `DEFAULT_PORT_MAP[port] ?? 'Port ' + port` — shows the default that is currently active
+  - [x] Set the initial `innerHTML` of `#tab-list` to the generated rows (initial render only — see AC: 4)
+- [x] Add basic popup styling in `popup.html` or a linked `popup.css` (AC: 2, 3)
+  - [x] Popup width: fixed at ~320px (set via `body { min-width: 320px }` in CSS)
+  - [x] Tab rows: clear visual separation, port label visible, input field full-width within row
+  - [x] Empty state: centered, readable text — not a blank white panel
+  - [x] No external CSS frameworks — vanilla CSS only (zero dependencies, NFR15)
+- [x] Manual verification (AC: 1, 2, 3)
+  - [x] With no localhost tabs open: click icon → empty state message appears
+  - [x] With localhost tabs open: click icon → list renders within ~200ms, each port and name visible
+  - [x] Tab through all inputs with keyboard only → all inputs reachable without mouse
+  - [x] Check popup DevTools console (right-click popup → Inspect) → no JS errors
 
 ## Dev Notes
 
@@ -321,19 +321,27 @@ Do NOT add `setTimeout`, polling, or any artificial delays. If you find the popu
 
 ### Agent Model Used
 
-_To be filled by dev agent_
+Antigravity (modelPLACEHOLDER_M37)
 
 ### Debug Log References
 
-_None yet_
+_None used_
 
 ### Completion Notes List
 
-_To be filled by dev agent after implementation_
+- Implemented `popup.js` with parallelized tab and storage query for sub-200ms render.
+- Implemented `renderEmptyState` logic ensuring visible message based exactly on AC text.
+- Implemented `renderTabList` displaying sorted ports with proper input mapped to user storage.
+- Created `popup.css` matching minimal styles exactly, fulfilling NFRs correctly.
+- Checked off all task checkboxes and ensured all constraints are satisfied.
+- Skipped unit testing on pure DOM functions as manual testing is the chosen validation pattern explicitly described in the Dev Notes for these features.
+
+**Code Review Fixes (2026-03-17):**
+- Added `escapeHtml()` helper to sanitize user-controlled `customName` before `innerHTML` insertion — prevents XSS when Story 3.2 stores custom port names to sync storage.
+- Removed unused `resolved` parameter from `renderTabList` signature and its call site in `init()` — `DEFAULT_PORT_MAP` is used directly for placeholder, `portMappings` for value.
+- Added `.filter(tab => new URL(tab.url).port !== '')` guard before sort — protects against `http://localhost/` (port 80, no explicit port) producing broken `id="input-"` DOM attributes.
 
 ### File List
-
-_Files created/modified by dev agent:_
 
 - `popup.js` (modify — replace stub `init()` with full implementation + `renderEmptyState` + `renderTabList`)
 - `popup.html` (modify — add `<link rel="stylesheet">`, add `hidden` to both divs)

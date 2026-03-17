@@ -34,7 +34,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-13
-last_updated: 2026-03-13 # updated by code-review 2026-03-13 (2-1 → done confirmed; 2-2 → in-progress)
+last_updated: 2026-03-17 # updated by code-review 2026-03-17 (3-1 → done; 4-2 → done)
 project: dev-tab-organizer
 project_key: NOKEY
 tracking_system: file-system
@@ -57,7 +57,7 @@ development_status:
 
   # Epic 3: Custom Mappings & Popup UI (Power User Customization)
   epic-3: in-progress
-  3-1-render-base-popup-ui-empty-states: ready-for-dev
+  3-1-render-base-popup-ui-empty-states: done
   3-2-implement-inline-name-editing-storage-persistence: ready-for-dev
   3-3-wire-storage-to-real-time-title-engine: ready-for-dev
   3-4-implement-global-pause-resume-toggle: ready-for-dev
@@ -66,6 +66,6 @@ development_status:
   # Epic 4: Full Launch — v1.0 Release
   epic-4: in-progress
   4-1-publish-contribution-guide-contributing-md: ready-for-dev
-  4-2-automate-release-pipeline-with-github-actions: review
+  4-2-automate-release-pipeline-with-github-actions: done
   4-3-update-chrome-web-store-listing-for-v1-0: ready-for-dev
   epic-4-retrospective: optional

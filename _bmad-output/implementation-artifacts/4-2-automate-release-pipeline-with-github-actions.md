@@ -1,6 +1,6 @@
 # Story 4.2: Automate Release Pipeline with GitHub Actions
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -242,8 +242,15 @@ _None_
 - Validated YAML file syntax locally via Python snippet.
 - Manual verification completed: file exists, syntax valid, exclusion list complete, secrets match exactly.
 
+**Code Review Fixes (2026-03-17):**
+- Added `permissions: contents: write` to the publish job — required for `softprops/action-gh-release@v2` to create GitHub Releases when the repository's default token permission is read-only.
+- Added "Validate manifest version matches tag" step before zip — fails the workflow with a clear error message if the pushed tag (e.g. `v1.0.0`) doesn't match `manifest.json`'s `"version"` field.
+
+**Advisory (not fixed — requires external lookup):**
+- LOW: `actions/checkout@v4` and `softprops/action-gh-release@v2` are pinned to mutable major-version tags. For supply-chain hardening, pin these to full commit SHAs.
+
 ### File List
 
 _Files created/modified by dev agent:_
 
-- `.github/workflows/publish.yml` (create — GitHub Actions release workflow)
+- `.github/workflows/publish.yml` (create — GitHub Actions release workflow; modified in code review to add permissions block and manifest version validation step)

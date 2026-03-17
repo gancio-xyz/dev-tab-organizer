@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dev Tab Organizer</title>
+  <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div id="tab-list" role="list" aria-label="Active localhost tabs"></div>
-  <div id="empty-state" aria-live="polite"></div>
+  <div id="tab-list" role="list" aria-label="Active localhost tabs" hidden></div>
+  <div id="empty-state" aria-live="polite" hidden></div>
   <script src="popup.js" type="module"></script>
 </body>
 </html>
