@@ -275,6 +275,44 @@ So that new tabs open during the session use native browser titles, while my set
 
 *(PRD FR27 — Extension Control)*
 
+### Story 3.5: Fix Duplicate Items in Popup Menu
+
+As a developer using the extension popup,
+I want to see exactly one entry per active localhost port in the menu,
+even after I have made multiple title changes,
+so that the UI remains clean and usable.
+
+**Acceptance Criteria:**
+- Opening the popup displays exactly one row per unique localhost tab/port combo.
+- Changing a port name inline and blurring/pressing Enter does not cause additional rows to appear in the list.
+- Subsequent opens of the popup show a stable list without duplication.
+- The "empty state" is correctly shown if all tabs are closed, even after previous duplications occurred.
+
+### Story 3.6: Fix Tab Title Prefix Accumulation
+
+As a developer using the extension,
+I want my tab titles to have exactly one `⚡ [port]` prefix,
+even if the page title is dynamically updated or I change the port mapping,
+so that the tab bar remains readable.
+
+**Acceptance Criteria:**
+- Tab titles never contain more than one `⚡` emoji or port number.
+- The `stripPrefix` function (and equivalent regex in `executeScript`) correctly identifies valid prefixes even without a dash separator.
+- Dynamic title updates by SPAs do not result in prefix doubling.
+- Changing a port mapping in the popup correctly replaces the old prefix with the new one.
+
+### Story 3.7: Fix Initial Name Resolution on Load
+
+As a developer opening a localhost tab,
+I want the tab title to include the resolved service name (e.g., "React") immediately,
+even if I haven't manually edited the mapping in the popup,
+so that the extension provides immediate value from the default port map.
+
+**Acceptance Criteria:**
+- Newly opened localhost tabs immediately display the resolved service name from the default port map (e.g., `⚡ 3000 — React — My App`).
+- The resolution logic correctly accounts for both `DEFAULT_PORT_MAP` and any custom overrides in `chrome.storage.sync`.
+- SPA title updates also preserve/re-resolve the service name correctly.
+
 ## Epic 4: Full Launch — v1.0 Release
 
 The project is fully open-source with a contribution guide, automated CI/CD release pipeline, and an updated Chrome Web Store listing reflecting the complete v1.0 feature set.

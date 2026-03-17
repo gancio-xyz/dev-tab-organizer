@@ -8,7 +8,7 @@ All contributions are accepted under the [MIT license](LICENSE).
 
 ## The Most Common Contribution: Adding a Port Mapping
 
-The default port map lives in [`port-map.js`](port-map.js). Adding a new framework is exactly **one line** inside the exported object:
+The default port map lives in [`extension/port-map.js`](extension/port-map.js). Adding a new framework is exactly **one line** inside the exported object:
 
 ```js
 export const DEFAULT_PORT_MAP = {
@@ -43,7 +43,7 @@ No build step required. Load it directly in Chrome:
 1. Open Chrome and navigate to `chrome://extensions`
 2. Enable **Developer mode** (toggle in the top-right corner)
 3. Click **Load unpacked**
-4. Select the root folder of this repository (the folder containing `manifest.json`)
+4. Select the `extension/` folder in this repository (the folder containing `manifest.json`)
 5. The extension icon appears in your Chrome toolbar immediately
 
 **To reload after making a change:** click the refresh ↺ icon next to the extension on `chrome://extensions`.

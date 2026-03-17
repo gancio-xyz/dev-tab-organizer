@@ -34,7 +34,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-13
-last_updated: 2026-03-17 # updated 2026-03-17 (4-1 → review)
+last_updated: 2026-03-17 # updated 2026-03-17 (Added 3.5, 3.6, 3.7 bugs)
 project: dev-tab-organizer
 project_key: NOKEY
 tracking_system: file-system
@@ -52,7 +52,7 @@ development_status:
   # Epic 2: Early Ship — v0.1 Launch
   epic-2: in-progress
   2-1-open-source-the-repository-on-github: done
-  2-2-submit-extension-to-chrome-web-store-v0-1: done
+  2-2-submit-extension-to-chrome-web-store-v0-1: in-progress
   2-3-structure-extension-bundle-folder: done
   epic-2-retrospective: optional
 
@@ -61,12 +61,15 @@ development_status:
   3-1-render-base-popup-ui-empty-states: done
   3-2-implement-inline-name-editing-storage-persistence: done
   3-3-wire-storage-to-real-time-title-engine: done
-  3-4-implement-global-pause-resume-toggle: review
+  3-4-implement-global-pause-resume-toggle: done
+  3-5-bug-fix-duplicate-popup-items: ready-for-dev
+  3-6-bug-fix-tab-title-prefix-accumulation: ready-for-dev
+  3-7-bug-fix-initial-name-resolution: ready-for-dev
   epic-3-retrospective: optional
 
   # Epic 4: Full Launch — v1.0 Release
   epic-4: in-progress
-  4-1-publish-contribution-guide-contributing-md: review
+  4-1-publish-contribution-guide-contributing-md: done
   4-2-automate-release-pipeline-with-github-actions: done
-  4-3-update-chrome-web-store-listing-for-v1-0: ready-for-dev
+  4-3-update-chrome-web-store-listing-for-v1-0: in-progress
   epic-4-retrospective: optional

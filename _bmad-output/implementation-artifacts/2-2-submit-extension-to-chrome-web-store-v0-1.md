@@ -1,6 +1,6 @@
 # Story 2.2: Submit Extension to Chrome Web Store (v0.1)
 
-Status: ready-for-dev
+Status: in-progress
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -34,16 +34,16 @@ So that any developer can install it in one click and the project gains real-wor
   - [x] From the project root, run: `zip -r extension.zip . -x "tests/*" ".github/*" "*.md" ".gitignore" "_bmad*"`
   - [x] Verify zip contents: `unzip -l extension.zip` — must contain `manifest.json`, `background.js`, `port-map.js`, `popup.html`, `popup.js`, `icons/`, must NOT contain `tests/`, `.github/`, markdown files, or planning artifacts
   - [x] Verify total unzipped size is under 50KB (NFR15)
-- [ ] Create the Chrome Web Store listing (AC: 1)
-  - [ ] Log in to `https://chrome.google.com/webstore/devconsole`
-  - [ ] Click **New item** → upload `extension.zip`
-  - [ ] Fill in listing fields (see content below)
-  - [ ] Upload at least 2 screenshots (1280×800 or 640×400 px, PNG or JPG)
-  - [ ] Enter the privacy policy URL
-  - [ ] Set distribution: **Public** (not unlisted)
-- [ ] Submit for review (AC: 2)
-  - [ ] Click **Submit for review** — review typically takes 1–3 business days
-  - [ ] Do not submit multiple times — one submission triggers the review queue
+- [x] Create the Chrome Web Store listing (AC: 1)
+  - [x] Log in to `https://chrome.google.com/webstore/devconsole`
+  - [x] Click **New item** → upload `extension.zip`
+  - [x] Fill in listing fields (see content below)
+  - [x] Upload at least 2 screenshots (1280×800 or 640×400 px, PNG or JPG)
+  - [x] Enter the privacy policy URL
+  - [x] Set distribution: **Public** (not unlisted)
+- [x] Submit for review (AC: 2)
+  - [x] Click **Submit for review** — review typically takes 1–3 business days
+  - [x] Do not submit multiple times — one submission triggers the review queue
 - [ ] After approval — update README (AC: 3)
   - [ ] Replace the `[Install from Chrome Web Store](#)` placeholder in `README.md` with the live CWS URL
   - [ ] Commit: `docs: update README with live Chrome Web Store link`

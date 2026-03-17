@@ -1,6 +1,6 @@
 # Story 4.1: Publish Contribution Guide (CONTRIBUTING.md)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -206,7 +206,8 @@ _None_
 - Instructions for unpacked extension, test execution, and PR workflow added.
 - In-scope/Out-of-scope guidance included.
 - Content manually checked to be plain language, with MIT license mentioned.
+- **AI Review Fixes (Story 4.1):** Corrected file references to `extension/port-map.js` and extension root path instructions in `CONTRIBUTING.md`.
 
 ### File List
 
-- `CONTRIBUTING.md` (create — at project root)
+- `CONTRIBUTING.md` (modified — fixed paths)
