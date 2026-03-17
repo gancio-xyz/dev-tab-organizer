@@ -19,6 +19,23 @@ export function buildTitle(port, pageTitle) {
   return `⚡ ${port}`;
 }
 
+export function resolvePortName(port, userMappings, defaultMap) {
+  const mappings = userMappings || {};
+  const defaults = defaultMap || {};
+
+  const userName = mappings[port];
+  if (typeof userName === 'string' && userName.trim()) {
+    return userName.trim();
+  }
+
+  const defaultName = defaults[port];
+  if (typeof defaultName === 'string' && defaultName.trim()) {
+    return defaultName.trim();
+  }
+
+  return undefined;
+}
+
 export function stripPrefix(title) {
   if (!title || !title.startsWith('⚡')) return title;
   return title.replace(/^⚡\s+\d+\s+—\s+/, '');
@@ -92,3 +109,40 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     // silent failure
   }
 });
+
+async function handleStorageChange(changes, area) {
+  if (area !== 'sync') return;
+  if (!changes.portMappings) return;
+
+  const newPortMappings = changes.portMappings.newValue ?? {};
+
+  try {
+    const tabs = await chrome.tabs.query({
+      url: ['*://localhost/*', '*://127.0.0.1/*']
+    });
+
+    for (const tab of tabs) {
+      const port = extractPort(tab.url);
+      if (!port) continue;
+
+      const name = resolvePortName(port, newPortMappings, DEFAULT_PORT_MAP);
+      const newTitle = buildTitle(port, name);
+
+      try {
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: (title) => {
+            document.title = title;
+          },
+          args: [newTitle]
+        });
+      } catch (_) {
+        // Tab may have closed between query and inject — silent fail per NFR9
+      }
+    }
+  } catch (_) {
+    // Silent fail per NFR9
+  }
+}
+
+chrome.storage.onChanged.addListener(handleStorageChange);

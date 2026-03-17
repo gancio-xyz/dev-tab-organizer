@@ -1,15 +1,36 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
+let onChangedCallback = null;
+let lastInjectedTitle = null;
+
 // Mock chrome BEFORE importing background.js
 globalThis.chrome = {
   runtime: { onInstalled: { addListener: () => {} } },
-  tabs: { onUpdated: { addListener: () => {} } },
-  scripting: { executeScript: async () => {} },
-  storage: { sync: { get: async () => ({}), set: async () => {} } }
+  tabs: {
+    onUpdated: { addListener: () => {} },
+    query: async () => [
+      { id: 1, url: 'http://localhost:3001/', title: '⚡ 3001 — Node / API' }
+    ]
+  },
+  scripting: {
+    executeScript: async ({ args }) => {
+      lastInjectedTitle = args[0];
+    }
+  },
+  storage: {
+    sync: {
+      get: async () => ({}),
+      set: async () => {}
+    },
+    onChanged: {
+      addListener: (cb) => {
+        onChangedCallback = cb;
+      }
+    }
+  }
 };
 
-// Import only pure functions — NOT the module side effect (addListener call)
 const { extractPort, buildTitle, stripPrefix } = await import('../background.js');
 
 test('extractPort: localhost URL with port', () => {
@@ -107,4 +128,40 @@ test('status=complete: skipped when neither title change nor complete', () => {
   const titleChanged = !!changeInfo.title;
   const pageLoaded = changeInfo.status === 'complete';
   assert.equal(titleChanged || pageLoaded, false);
+});
+
+test('onChanged: updates tab title when portMappings changes', async () => {
+  lastInjectedTitle = null;
+  await onChangedCallback(
+    { portMappings: { oldValue: {}, newValue: { '3001': 'Payment API' } } },
+    'sync'
+  );
+  assert.equal(lastInjectedTitle, '⚡ 3001 — Payment API');
+});
+
+test('onChanged: reverts to default when custom override deleted', async () => {
+  lastInjectedTitle = null;
+  await onChangedCallback(
+    { portMappings: { oldValue: { '3001': 'Payment API' }, newValue: {} } },
+    'sync'
+  );
+  assert.equal(lastInjectedTitle, '⚡ 3001 — Node / API');
+});
+
+test('onChanged: ignores non-sync area', async () => {
+  lastInjectedTitle = null;
+  await onChangedCallback(
+    { portMappings: { oldValue: {}, newValue: { '3001': 'X' } } },
+    'local'
+  );
+  assert.equal(lastInjectedTitle, null);
+});
+
+test('onChanged: ignores changes without portMappings key', async () => {
+  lastInjectedTitle = null;
+  await onChangedCallback(
+    { isEnabled: { oldValue: true, newValue: false } },
+    'sync'
+  );
+  assert.equal(lastInjectedTitle, null);
 });
