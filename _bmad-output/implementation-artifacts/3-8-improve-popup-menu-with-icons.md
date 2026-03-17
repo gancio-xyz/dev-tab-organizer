@@ -31,7 +31,9 @@ So that I can quickly identify my projects at a glance and customize them to my 
 - [ ] Modify `popup.js` `renderTabList` to include an emoji in each row.
 - [ ] Update `popup.js` `saveMapping` and `attachEditListeners` to handle the new emoji input field.
 - [ ] Update `popup.html` / `popup.css` to accommodate the new emoji input field (proper spacing, alignment).
+- [ ] Update `popup.html` / `popup.css` to make the emoji input field editable with only one emoji.
 - [ ] Ensure `background.js` (or wherever title rewriting happens) doesn't break if the storage structure for `portMappings` changes.
+- [ ] Ensure the tab title gets wrote consistently and it does not duplicate title, emojis or port numbers.
 
 ## Dev Notes
 
