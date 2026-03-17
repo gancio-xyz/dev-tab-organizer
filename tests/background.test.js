@@ -81,3 +81,30 @@ test('guard-blocks scenario: onUpdated guard fires and prevents loop', () => {
   const guardBlocks = changeInfo.title && changeInfo.title.startsWith('⚡');
   assert.equal(guardBlocks, true);
 });
+
+// --- status=complete (static-page) path ---
+
+test('status=complete: proceeds when tab.title is a plain title', () => {
+  const changeInfo = { status: 'complete' };
+  const tab = { url: 'http://localhost:8000/', title: 'Directory listing for /' };
+  const titleChanged = !!changeInfo.title;
+  const pageLoaded = changeInfo.status === 'complete';
+  const shouldProceed = titleChanged || pageLoaded;
+  const currentTitle = changeInfo.title || tab.title || '';
+  assert.equal(shouldProceed, true);
+  assert.equal(currentTitle.startsWith('⚡'), false);
+});
+
+test('status=complete: guard blocks when tab.title is already prefixed', () => {
+  const changeInfo = { status: 'complete' };
+  const tab = { url: 'http://localhost:8000/', title: '⚡ 8000 — Directory listing for /' };
+  const currentTitle = changeInfo.title || tab.title || '';
+  assert.equal(currentTitle.startsWith('⚡'), true);
+});
+
+test('status=complete: skipped when neither title change nor complete', () => {
+  const changeInfo = { status: 'loading' };
+  const titleChanged = !!changeInfo.title;
+  const pageLoaded = changeInfo.status === 'complete';
+  assert.equal(titleChanged || pageLoaded, false);
+});

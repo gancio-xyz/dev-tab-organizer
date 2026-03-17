@@ -61,8 +61,15 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   try {
-    if (!changeInfo.title) return;
-    if (changeInfo.title.startsWith('⚡')) return;
+    const titleChanged = !!changeInfo.title;
+    const pageLoaded = changeInfo.status === 'complete';
+    if (!titleChanged && !pageLoaded) return;
+
+    // Derive the authoritative title: prefer changeInfo.title (title-change event),
+    // fall back to tab.title (status=complete with no simultaneous title change).
+    const currentTitle = changeInfo.title || tab.title || '';
+    if (currentTitle.startsWith('⚡')) return;
+
     const port = extractPort(tab.url);
     if (!port) return;
 
